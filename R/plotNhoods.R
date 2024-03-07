@@ -704,6 +704,8 @@ plotDAbeeswarm <- function(da.res, group.by=NULL, alpha=0.1, subset.nhoods=NULL)
 
   n_groups <- unique(da.res$group_by) %>% length()
 
+  # I will make changes
+  
   da.res %>%
     mutate(is_signif = ifelse(SpatialFDR < alpha, 1, 0)) %>%
     mutate(logFC_color = ifelse(is_signif==1, logFC, NA)) %>%
