@@ -704,24 +704,34 @@ plotDAbeeswarm <- function(da.res, group.by=NULL, alpha=0.1, subset.nhoods=NULL)
 
   n_groups <- unique(da.res$group_by) %>% length()
   
-  da.res %>%
-    mutate(is_signif = ifelse(SpatialFDR < alpha, 1, 0)) %>%
-    mutate(logFC_color = ifelse(is_signif==1, logFC, NA)) %>%
+  beeswarm_data <- da.res %>%
+    mutate(is_signif=ifelse(SpatialFDR < alpha, 1, 0)) %>%
+    mutate(logFC_color=ifelse(is_signif==1, logFC, NA)) %>%
     arrange(group_by) %>%
     mutate(Nhood=factor(Nhood, levels=unique(Nhood))) %>%
-    mutate(pos_x = pos_x, pos_y=pos_y) %>%
-    ggplot(aes(pos_x, pos_y, color=logFC_color)) +
-    # scale_color_gradient2() +
+    mutate(pos_x=pos_x, pos_y=pos_y)
+    
+  beeswarm_plot <- ggplot(beeswarm_data, aes(pos_x, pos_y, color=logFC_color)) + 
     guides(color="none") +
     xlab(group.by) + ylab("Log Fold Change") +
-    scale_x_continuous(
-      breaks = seq(1,n_groups),
-      labels = setNames(levels(da.res$group_by), seq(1,n_groups))
-      ) +
+    scale_x_continuous(breaks=seq(1,n_groups), labels=parse(text=setNames(levels(da.res$group_by), seq(1,n_groups)))) + 
+    ylim(-max(abs(da.res$logFC)), max(abs(da.res$logFC))) +
     geom_point() +
     coord_flip() +
     theme_bw(base_size=22) +
-    theme(strip.text.y =  element_text(angle=0))
+    theme(strip.text.y=element_text(angle=0))
+  
+  if(any(da.res$SpatialFDR < alpha)) {
+      
+      beeswarm_plot <- beeswarm_plot + scale_color_gradient2()
+  
+  } else {
+      
+      beeswarm_plot <- beeswarm_plot + scale_color_manual(values="grey50")
+  
+  }
+    
+  return(beeswarm_plot)
 
 }
 
