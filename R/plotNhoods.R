@@ -703,8 +703,6 @@ plotDAbeeswarm <- function(da.res, group.by=NULL, alpha=0.1, subset.nhoods=NULL)
   pos_y <- beeswarm_pos$data[[1]]$y
 
   n_groups <- unique(da.res$group_by) %>% length()
-
-  # I will make changes
   
   da.res %>%
     mutate(is_signif = ifelse(SpatialFDR < alpha, 1, 0)) %>%
@@ -713,7 +711,7 @@ plotDAbeeswarm <- function(da.res, group.by=NULL, alpha=0.1, subset.nhoods=NULL)
     mutate(Nhood=factor(Nhood, levels=unique(Nhood))) %>%
     mutate(pos_x = pos_x, pos_y=pos_y) %>%
     ggplot(aes(pos_x, pos_y, color=logFC_color)) +
-    scale_color_gradient2() +
+    # scale_color_gradient2() +
     guides(color="none") +
     xlab(group.by) + ylab("Log Fold Change") +
     scale_x_continuous(
